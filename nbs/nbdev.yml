@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "wind-simulation"
+  site-url: "https://GarethPaulBell.github.io/wind-simulation"
+  description: "Create a visualization of wind flows around your typical yacht racing area"
+  repo-branch: main
+  repo-url: "https://github.com/GarethPaulBell/wind-simulation"
