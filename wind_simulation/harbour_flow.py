@@ -284,7 +284,11 @@ def run_simulation(cfg: SimConfig) -> dict[str, np.ndarray]:
         f"\nRunning {cfg.num_steps} steps on "
         f"{cfg.backend.name} backend (ω={cfg.omega}, u_inlet={cfg.inlet_vel})"
     )
-    print(f"Grid: {nx}×{ny}  | Re ≈ {cfg.inlet_vel * 2 * cfg.obs_radius / ((1/cfg.omega - 0.5)/3):.0f}\n")
+    # Kinematic viscosity: ν = (1/ω − 0.5) / 3  (D2Q9 lattice units)
+    # Reynolds number based on obstacle diameter as length scale: Re = U · 2r / ν
+    nu = (1.0 / cfg.omega - 0.5) / 3.0
+    re = cfg.inlet_vel * 2 * cfg.obs_radius / nu
+    print(f"Grid: {nx}×{ny}  | ν={nu:.4f}  | Re ≈ {re:.0f}\n")
 
     for step in range(cfg.num_steps):
         f_0, f_1 = stepper(f_0, f_1, bc_mask, missing_mask, cfg.omega, step)
@@ -442,7 +446,8 @@ def plot_vorticity(results: dict[str, np.ndarray], out_path: str) -> None:
 # ---------------------------------------------------------------------------
 
 def _save_fig(fig: plt.Figure, out_path: str) -> None:
-    os.makedirs(os.path.dirname(out_path) if os.path.dirname(out_path) else ".", exist_ok=True)
+    parent = os.path.dirname(os.path.abspath(out_path))
+    os.makedirs(parent, exist_ok=True)
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"  Saved → {out_path}")

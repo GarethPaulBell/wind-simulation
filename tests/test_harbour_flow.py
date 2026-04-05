@@ -49,10 +49,12 @@ class TestMakeCircularObstacleMask:
 
     def test_radius_boundary(self):
         m = _import_module()
-        # A cell exactly at distance r should be solid (≤ r²)
+        # mask indexing: mask[y, x]; obstacle at cx=50, cy=50, r=10
+        # Cell at (y=50, x=60): (x-cx)²+(y-cy)² = (60-50)²+(50-50)² = 100 = r² → solid
+        # Cell at (y=50, x=61): (61-50)²+(50-50)² = 121 > 100 → fluid
         mask = m.make_circular_obstacle_mask(100, 100, 50, 50, 10)
-        assert mask[50, 60]   # (50-50)² + (60-50)² = 100 = r² → solid
-        assert not mask[50, 61]  # (61-50)² = 121 > 100 → fluid
+        assert mask[50, 60]   # on the boundary circle → solid
+        assert not mask[50, 61]  # just outside → fluid
 
 
 # ---------------------------------------------------------------------------
